@@ -4,7 +4,7 @@ import telnetlib
 HOSTS = ("192.168.1.139")
 user = "foo"
 password = "letmein"
-user_input_symbol=("Username: ", "login: ")
+user_input_symbol=["Username: ", "login: "]
 
 for item in HOSTS:
     tn = telnetlib.Telnet(item)
