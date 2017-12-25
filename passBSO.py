@@ -9,7 +9,7 @@ user_input_symbol = ["Username: ", "login: "]
 time_out_sec = 60
 for item in HOSTS:
     try:
-        tn = telnetlib.Telnet(item, time_out_sec)
+        tn = telnetlib.Telnet(item)
         tn.set_debuglevel(9)
         #tn.read_until("Username: ")
         tn.expect(user_input_symbol, time_out_sec)
