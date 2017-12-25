@@ -20,6 +20,7 @@ for item in HOSTS:
 
         #tn.write("ls\n")
         tn.write("exit\n")
-        print tn.read_all()
+        #print tn.read_all()
+        tn.close()
     except socket.error, e:
         print item + " BSO has been passed"
