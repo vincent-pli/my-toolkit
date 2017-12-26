@@ -1,12 +1,14 @@
 import sys
 import telnetlib
 import socket
+import os
 
-HOSTS = ("192.168.3.111")
-user = "foo@163.com"
+HOSTS = ("192.168.3.11")
+user = "foo@gmail.com"
 password = "xxxxxx"
-user_input_symbol = ["Username: ", "login: "]
 time_out_sec = 60
+user_input_symbol = ["Username: ", "login: "]
+quite_symbol = ["Login incorrect", "BSO Authentication Successful "]
 for item in HOSTS:
     try:
         tn = telnetlib.Telnet(item)
@@ -18,9 +20,9 @@ for item in HOSTS:
             tn.read_until("Password: ")
             tn.write(password + "\n")
 
-        #tn.write("ls\n")
+        tn.expect(quite_symbol, time_out_sec)
         tn.write("exit\n")
-        #print tn.read_all()
         tn.close()
     except socket.error, e:
         print item + " BSO has been passed"
+
