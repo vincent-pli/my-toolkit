@@ -1,4 +1,9 @@
 #!/bin/sh
+if [ $# != 2 ]; then
+    echo "Need input tow parameters: 1: name of .spec 2: name of rpm package"	
+    exit 1
+fi
+
 curr_dir=`pwd`
 # set up env and complier for lsfbeat
 dirname=$(cd "$(dirname "$0")"; pwd)
