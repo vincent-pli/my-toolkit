@@ -45,21 +45,26 @@ while IFS='' read -r line || [[ -n "$line" ]]; do
     
 done < ${target_spec}
 
-awk '/%install/ { print; print "cp -rf %{_repacksourcedir}/* ${RPM_BUILD_ROOT}/"; next }1' ${tmp_spec} > ${intend_spec}
+result=`grep "%install" ${tmp_spec}`
+if [ -z ${result} ]; then
+    echo -e '%install\ncp -rf %{_repacksourcedir}/* ${RPM_BUILD_ROOT}/\nexit 0' >> ${tmp_spec}
+    cat ${tmp_spec} > ${intend_spec}
+else
+    awk '/%install/ { print; print "cp -rf %{_repacksourcedir}/* ${RPM_BUILD_ROOT}/\nexit 0"; next }1' ${tmp_spec} > ${intend_spec}
+fi
 rm -rf ${tmp_spec}
-
 
 echo "Begin to pack rpm"
 RELEASE_BUILD=`date '+%y%m%d'`
 rm -rf BUILD BUILDROOT RPMS SPECS SRPMS
 mkdir -p BUILD BUILDROOT RPMS SPECS SRPMS
 mkdir -p buildroot
-#cp -rf $(BUILDTMP)/* buildroot/
+#cp -rf $(UNCOMPRESSDIR)/* buildroot/
 rpmbuilddir="./RPMS/"
 rm -f .rpmmacros;\
 echo "%_topdir  `pwd`" > .rpmmacros;\
 echo "%_builddir  %{_topdir}" >> .rpmmacros
-HOME=`pwd`;rpmbuild -bb --define "_buildno ${RELEASE_BUILD}"  --define "_repacksourcedir ${UNCOMPRESSDIR}" --buildroot "`pwd`/buildroot" ${intend_spec}
+HOME=`pwd`;rpmbuild -bb -v --define "_buildno ${RELEASE_BUILD}"  --define "_repacksourcedir ${UNCOMPRESSDIR}" --buildroot "`pwd`/buildroot" ${intend_spec}
 #make build-lsfbeat
 
 echo "Clean..."
