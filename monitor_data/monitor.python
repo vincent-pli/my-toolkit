@@ -1,0 +1,56 @@
+import sys
+import time
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
+import os
+import errno
+import shutil
+import logging
+
+class MyHandler(FileSystemEventHandler):
+    def __init__(self):
+        logging.basicConfig(level = logging.INFO)
+        log = logging.getLogger(__name__)
+        _h = logging.FileHandler("/home/lipeng/workspace/monitor_data/logs/message.log")
+        _h.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+        log.addHandler(_h)
+        self.logger = log
+
+    def replacePrefix(self, path):
+        return path.replace("/data/networkSharing/share", "/backup/backup")      
+
+    def on_created(self, event):
+        self.logger.info('Detect operation: {0}, the resource path is {1}'.format(event.event_type, event.src_path))
+        dest_path = self.replacePrefix(event.src_path)
+        if event.is_directory:
+            os.makedirs(dest_path)
+        else:
+            if not os.path.exists(os.path.dirname(dest_path)):
+                try:
+                    os.makedirs(os.path.dirname(dest_path))
+                except OSError as exc:
+                    if exc.errno != errno.EEXITS:
+                        raise
+            shutil.copyfile(event.src_path, dest_path)
+
+    def on_deleted(self, event):
+        self.logger.info('Detect operation: {0}, the resource path is {1}'.format(event.event_type, event.src_path))
+        dest_path = self.replacePrefix(event.src_path)
+        if event.is_directory:
+            shutil.rmtree(dest_path)
+        else:
+           os.remove(dest_path)
+
+if __name__ == '__main__':
+    args = sys.argv[1:]
+    observer = Observer()
+    observer.schedule(MyHandler(), path = args[0] if args else '/data/networkSharing/share/', recursive=True)
+    observer.start()
+    
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        observer.stop()
+    
+    observer.join()

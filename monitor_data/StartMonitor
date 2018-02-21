@@ -1,0 +1,26 @@
+#! /bin/sh
+# /etc/init.d/StartVM
+#
+
+#Edit these variables!
+VMUSER=lipeng
+VMNAME="ubuntu16.04"
+
+case "$1" in
+  start)
+    echo "Starting VirtualBox VM..."
+    sudo python /home/lipeng/workspace/monitor_data/monitor.python
+    ;;
+  stop)
+    echo "Saving state of Virtualbox VM..."
+    pid=`ps -ef|grep -v grep | grep -v sudo | grep -w "monitor.python" | awk '{print $2}'`
+    echo $pid
+    sudo kill -9 $pid
+    ;;
+  *)
+    echo "Usage: /etc/init.d/StartVM {start|stop}"
+    exit 1
+    ;;
+esac
+
+exit 0
