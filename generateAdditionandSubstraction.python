@@ -1,13 +1,49 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+
 import random
 
+question_count = 6
+score = 100
+score_pre_question = score/(question_count - 1)
 
-for num in range(1, 20):
+list = []
+for num in range(1, question_count):
     a = random.randint(1,20)
     b = random.randint(1,20)
+    pre_answer = 0
+
     if num % 2 != 0 :
-        print("{0} + {1} = ".format(a, b))
+        question = str(a) + " + " + str(b) + " = "
+        print(question)
+        pre_answer = a + b
     else:
         if a > b:
-            print("{0} - {1} = ".format(a, b))
+            question = str(a) + " - " + str(b) + " = "
+            print(question)
+            pre_answer = a - b
         else:
-            print("{0} - {1} = ".format(b, a))
+            question = str(b) + " - " + str(a) + " = "
+            print(question)
+            pre_answer = b - a
+    
+    answer = raw_input("等于多少呢？")
+    print(type(answer))
+    if answer.isdigit() and int(answer) == pre_answer:
+        judge = "对啦！"
+    else:
+        judge = "出错啦！"
+        score -= score_pre_question
+
+    list.append({"question": question, "answer": answer, "judge": judge})
+
+print("---------------------------------------------")
+index = 1
+for item in list:
+    print("第%s题:" %(index))
+    index += 1
+    print(item["question"] + item["answer"] + " || " + item["judge"])
+
+print("李绿豆同学，你的最终得分是：" + str(score) + (" 真厉害，你是大流氓！" if score == 100 else " 大弱鸡，继续加油！"))
+
+
