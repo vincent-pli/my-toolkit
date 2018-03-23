@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 import random
+import datetime
 
 question_count = 6
 score = 100
@@ -9,26 +10,23 @@ score_pre_question = score/(question_count - 1)
 
 list = []
 for num in range(1, question_count):
-    a = random.randint(1,20)
+    a = random.randint(1,10)
     b = random.randint(1,20)
     pre_answer = 0
 
     if num % 2 != 0 :
         question = str(a) + " + " + str(b) + " = "
-        print(question)
         pre_answer = a + b
     else:
         if a > b:
             question = str(a) + " - " + str(b) + " = "
-            print(question)
             pre_answer = a - b
         else:
             question = str(b) + " - " + str(a) + " = "
-            print(question)
             pre_answer = b - a
-    
+
+    print("第%s题："%(num) + question)    
     answer = raw_input("等于多少呢？")
-    print(type(answer))
     if answer.isdigit() and int(answer) == pre_answer:
         judge = "对啦！"
     else:
@@ -38,12 +36,24 @@ for num in range(1, question_count):
     list.append({"question": question, "answer": answer, "judge": judge})
 
 print("---------------------------------------------")
+wrong_list = []
 index = 1
 for item in list:
     print("第%s题:" %(index))
     index += 1
     print(item["question"] + item["answer"] + " || " + item["judge"])
+    if item["judge"] == "出错啦！":
+        wrong_list.append(item["question"] + item["answer"])
 
-print("李绿豆同学，你的最终得分是：" + str(score) + (" 真厉害，你是大流氓！" if score == 100 else " 大弱鸡，继续加油！"))
+print("李绿豆同学，你的最终得分是：" + str(score) + (" 真厉害，你是大帅哥！" if score == 100 else " 大弱鸡，继续加油！"))
 
-
+nowTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+with open('./result', 'a') as f:
+    f.write("----------------------------------------\n")
+    f.write(nowTime + " || " + str(score) + "\n")
+    f.write("错题列表：\n")
+    if len(wrong_list) > 0:
+        for item in wrong_list:
+            f.write(item + "\n")
+    else:
+        f.write("啥也没得！\n")
